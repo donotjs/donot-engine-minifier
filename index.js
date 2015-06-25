@@ -50,7 +50,7 @@ exports = module.exports = function(opt) {
   options.css = options.css || {};
 
   options.js = options.js || {
-    mange: false,
+    mangle: false,
     compress: {
       sequences: false
     }
