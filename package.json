@@ -1,0 +1,22 @@
+{
+  "name": "smart-static-minify",
+  "version": "1.0.2",
+  "description": "Minifier support for smart-static.",
+  "author": "Kristian Trenskow <trenskow@me.com>",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/trenskow/smart-static-stylus"
+  },
+  "dependencies": {
+    "minify": "^1.4.18"
+  },
+  "devDependencies": {
+    "mocha": "^2.2.5",
+    "chai": "^3.0.0"
+  },
+  "scripts": {
+    "test": "mocha test/*"
+  },
+  "license": "MIT"
+}
