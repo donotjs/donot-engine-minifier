@@ -4,56 +4,58 @@ var CleanCSS = require('clean-css');
 var UglifyJS = require('uglify-js');
 var htmlMinify = require('html-minifier').minify;
 
-var options = {};
-
-var compileCss = function(file, data, opt, cb) {
-  var css;
-  try {
-    css = (new CleanCSS(options.css)).minify(data).styles
-  } catch(err) {
-    return cb(err);
-  }
-  cb(null, css, [file]);
-};
-
-var compileJs = function(file, data, opt, cb) {
-  var js;
-  try {
-    js = UglifyJS.minify(data, merge(options.html, {
-      fromString: true,
-      compress: {
-        sequences: false
-      }
-    })).code;
-  } catch(err) {
-    return cb(err);
-  }
-  cb(null, js, [file]);
-};
-
-var compileHtml = function(file, data, opt, cb) {
-  var html;
-  try {
-    html = htmlMinify(data, options.html);
-  } catch(err) {
-    return cb(err);
-  }
-  cb(null, html, [file]);
-};
-
-var compilers = {
-  '.css': compileCss,
-  '.js': compileJs,
-  '.html': compileHtml,
-  '.htm': compileHtml
-};
-
 exports = module.exports = function(opt) {
+
+  var options = {};
+
+  var compileCss = function(file, data, opt, cb) {
+    var css;
+    try {
+      css = (new CleanCSS(options.css)).minify(data).styles
+    } catch(err) {
+      return cb(err);
+    }
+    cb(null, css, [file]);
+  };
+
+  var compileJs = function(file, data, opt, cb) {
+    var js;
+    try {
+      js = UglifyJS.minify(data, merge(options.js, { fromString: true })).code;
+    } catch(err) {
+      return cb(err);
+    }
+    cb(null, js, [file]);
+  };
+
+  var compileHtml = function(file, data, opt, cb) {
+    var html;
+    try {
+      html = htmlMinify(data, options.html);
+    } catch(err) {
+      return cb(err);
+    }
+    cb(null, html, [file]);
+  };
+
+  var compilers = {
+    '.css': compileCss,
+    '.js': compileJs,
+    '.html': compileHtml,
+    '.htm': compileHtml
+  };
 
   options = merge(opt);
 
   options.css = options.css || {};
-  options.js = options.js || {};
+
+  options.js = options.js || {
+    mange: false,
+    compress: {
+      sequences: false
+    }
+  };
+
   options.html = options.html || {
     removeComments: true,
     removeCommentsFromCDATA: true,
