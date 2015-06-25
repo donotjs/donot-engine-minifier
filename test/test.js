@@ -25,7 +25,7 @@ describe('stylus', function() {
 
     it ('should come back with minified css', function(done) {
       engine().compile('test.css', css, {}, function(err, data, files) {
-        expect(err).to.be.undefined;
+        expect(err).to.be.null;
         expect(data).to.equal('my{width:100%}');
         expect(files).to.an.array;
         expect(files[0]).to.equal('test.css');
@@ -35,7 +35,7 @@ describe('stylus', function() {
 
     it ('should come back with minified js', function(done) {
       engine().compile('test.js', js, {}, function(err, data, files) {
-        expect(err).to.be.undefined;
+        expect(err).to.be.null;
         expect(data).to.equal('function myFunc(){console.log("test")}');
         expect(files).to.an.array;
         expect(files[0]).to.equal('test.js');
@@ -45,7 +45,7 @@ describe('stylus', function() {
 
     it ('should come back with minified html', function(done) {
       engine().compile('test.html', html, {}, function(err, data, files) {
-        expect(err).to.be.undefined;
+        expect(err).to.be.null;
         expect(data).to.equal('<!DOCTYPE html><html><head><title>HTML</title><body><h1>My HTML document</h1>');
         expect(files).to.an.array;
         expect(files[0]).to.equal('test.html');
