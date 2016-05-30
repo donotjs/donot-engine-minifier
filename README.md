@@ -13,7 +13,7 @@ Using the minifier donot engine plug-in is pretty easy.
 	    donot = require('donot'),
 	    minifier = require('donot-engine-minifier');
     
-    var server = http.createServer(smartStatic(__dirname + '/public', {
+    var server = http.createServer(donot(__dirname + '/public', {
         engines: [
         	minifier()
         ]
