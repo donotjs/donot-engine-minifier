@@ -1,3 +1,5 @@
+'use strict';
+
 var path = require('path');
 var merge = require('merge');
 var CleanCSS = require('clean-css');
