@@ -11,7 +11,7 @@ exports = module.exports = function(opt) {
   var compileCss = function(file, data, opt, cb) {
     var css;
     try {
-      css = (new CleanCSS(options.css)).minify(data).styles
+      css = (new CleanCSS(options.css)).minify(data).styles;
     } catch(err) {
       return cb(err);
     }

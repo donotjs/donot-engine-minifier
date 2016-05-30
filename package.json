@@ -1,12 +1,12 @@
 {
-  "name": "smart-static-minify",
-  "version": "1.0.2",
-  "description": "Minifier support for smart-static.",
+  "name": "donot-engine-minifier",
+  "version": "1.0.0",
+  "description": "Minifier support for donot.",
   "author": "Kristian Trenskow <trenskow@me.com>",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/trenskow/smart-static-stylus"
+    "url": "https://github.com/trenskow/donot-engine-minifier"
   },
   "dependencies": {
     "clean-css": "^3.3.3",

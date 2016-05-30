@@ -1,22 +1,21 @@
-smart-static-minify
-===================
+donot-engine-minifier
+=====================
 
-[![Build Status](https://travis-ci.org/trenskow/smart-static-minify.svg?branch=master)](https://travis-ci.org/trenskow/smart-static-minify)
+[![Build Status](https://travis-ci.org/trenskow/donot-engine-minifier.svg?branch=master)](https://travis-ci.org/trenskow/donot-engine-minifier)
 
-Minifier engine for [smart-static](http://github.com/trenskow/smart-static.js).
+Minifier engine for [donot](http://github.com/trenskow/donot).
 
 # Usage
 
-Using the minifier smart-static engine plug-in is pretty easy.
+Using the minifier donot engine plug-in is pretty easy.
 
-	var http = require('http');
-	
-	var smartStatic = require('smart-static');
-    var minify = require('smart-static-minify');
+	var http = require('http'),
+	    donot = require('donot'),
+	    minifier = require('donot-engine-minifier');
     
     var server = http.createServer(smartStatic(__dirname + '/public', {
         engines: [
-        	minify()
+        	minifier()
         ]
     }));
     

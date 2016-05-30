@@ -1,3 +1,5 @@
+/*jshint expr: true*/
+
 var expect = require('chai').expect;
 var engine = require('../');
 
@@ -21,7 +23,7 @@ describe('stylus', function() {
                '  <body>\n' +
                '    <h1>My HTML document</h1>\n' +
                '  </body>\n' +
-               '</html>\n'
+               '</html>\n';
 
     it ('should come back with minified css', function(done) {
       engine().compile('test.css', css, {}, function(err, data, files) {
