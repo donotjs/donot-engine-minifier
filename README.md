@@ -1,9 +1,9 @@
 donot-engine-minifier
 =====================
 
-[![Build Status](https://travis-ci.org/trenskow/donot-engine-minifier.svg?branch=master)](https://travis-ci.org/trenskow/donot-engine-minifier)
+[![Build Status](https://travis-ci.org/donotjs/donot-engine-minifier.svg?branch=master)](https://travis-ci.org/donotjs/donot-engine-minifier)
 
-Minifier engine for [donot](http://github.com/trenskow/donot).
+Minifier engine for [donot](http://github.com/donotjs/donot).
 
 # Usage
 

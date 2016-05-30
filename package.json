@@ -6,7 +6,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/trenskow/donot-engine-minifier"
+    "url": "https://github.com/donotjs/donot-engine-minifier"
   },
   "dependencies": {
     "clean-css": "^3.3.3",
