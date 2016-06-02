@@ -2,61 +2,63 @@
 
 'use strict';
 
-var expect = require('chai').expect;
-var engine = require('../');
+const chai = require('chai');
+const expect = chai.expect;
+const chaiAsPromised = require('chai-as-promised');
 
-describe('stylus', function() {
+chai.should();
+chai.use(chaiAsPromised);
 
-  describe('compiler', function() {
+const MinifyTransform = require('../');
 
-    var css = 'my {\n' +
-              '    width: 100%;' +
-              '}\n';
+var transform = new MinifyTransform();
 
-    var js = 'function myFunc() {\n' +
-             '    console.log(\'test\');\n' +
-             '}\n';
+describe('minify', () => {
 
-    var html = '<!DOCTYPE html>\n' +
-               '<html>\n' +
-               '  <head>\n' +
-               '    <title>HTML</title>\n' +
-               '  </head>\n' +
-               '  <body>\n' +
-               '    <h1>My HTML document</h1>\n' +
-               '  </body>\n' +
-               '</html>\n';
+	describe('compiler', () => {
 
-    it ('should come back with minified css', function(done) {
-      engine().compile('test.css', css, {}, function(err, data, files) {
-        expect(err).to.be.null;
-        expect(data).to.equal('my{width:100%}');
-        expect(files).to.an.array;
-        expect(files[0]).to.equal('test.css');
-        done();
-      });
-    });
+		var css = 'my {\n' +
+							'		width: 100%;' +
+							'}\n';
 
-    it ('should come back with minified js', function(done) {
-      engine().compile('test.js', js, {}, function(err, data, files) {
-        expect(err).to.be.null;
-        expect(data).to.equal('function myFunc(){console.log("test")}');
-        expect(files).to.an.array;
-        expect(files[0]).to.equal('test.js');
-        done();
-      });
-    });
+		var js = 'function myFunc() {\n' +
+						 '		console.log(\'test\');\n' +
+						 '}\n';
 
-    it ('should come back with minified html', function(done) {
-      engine().compile('test.html', html, {}, function(err, data, files) {
-        expect(err).to.be.null;
-        expect(data).to.equal('<!DOCTYPE html><html><head><title>HTML</title><body><h1>My HTML document</h1>');
-        expect(files).to.an.array;
-        expect(files[0]).to.equal('test.html');
-        done();
-      });
-    });
+		var html = '<!DOCTYPE html>\n' +
+							 '<html>\n' +
+							 '	<head>\n' +
+							 '		<title>HTML</title>\n' +
+							 '	</head>\n' +
+							 '	<body>\n' +
+							 '		<h1>My HTML document</h1>\n' +
+							 '	</body>\n' +
+							 '</html>\n';
 
-  });
+		it ('should come back with minified css', () => {
+			return transform.compile('test.css', css).then((result) => {
+				expect(result.data).to.equal('my{width:100%}');
+				expect(result.files).to.an.array;
+				expect(result.files[0]).to.equal('test.css');
+			}).should.eventually.be.fulfilled;
+		});
+
+		it ('should come back with minified js', () => {
+			return transform.compile('test.js', js).then((result) => {
+				expect(result.data).to.equal('function myFunc(){console.log("test")}');
+				expect(result.files).to.an.array;
+				expect(result.files[0]).to.equal('test.js');
+			}).should.eventually.be.fulfilled;
+		});
+
+		it ('should come back with minified html', () => {
+			return transform.compile('test.html', html).then((result) => {
+				expect(result.data).to.equal('<!DOCTYPE html><html><head><title>HTML</title><body><h1>My HTML document</h1>');
+				expect(result.files).to.an.array;
+				expect(result.files[0]).to.equal('test.html');
+			}).should.eventually.be.fulfilled;
+		});
+
+	});
 
 });

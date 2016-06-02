@@ -1,88 +1,93 @@
 'use strict';
 
-var path = require('path');
-var merge = require('merge');
-var CleanCSS = require('clean-css');
-var UglifyJS = require('uglify-js');
-var htmlMinify = require('html-minifier').minify;
+const path = require('path');
+const merge = require('merge');
+const CleanCSS = require('clean-css');
+const UglifyJS = require('uglify-js');
+const htmlMinify = require('html-minifier').minify;
+const Transform = require('@donotjs/donot-transform');
 
-exports = module.exports = function(opt) {
+class MinifyTranform extends Transform {
 
-  var options = {};
+	constructor(options) {
+		super();
 
-  var compileCss = function(file, data, opt, cb) {
-    var css;
-    try {
-      css = (new CleanCSS(options.css)).minify(data).styles;
-    } catch(err) {
-      return cb(err);
-    }
-    cb(null, css, [file]);
-  };
+		this.options = merge(true, options || {});
 
-  var compileJs = function(file, data, opt, cb) {
-    var js;
-    try {
-      js = UglifyJS.minify(data, merge(options.js, { fromString: true })).code;
-    } catch(err) {
-      return cb(err);
-    }
-    cb(null, js, [file]);
-  };
+		this.options.css = this.options.css || {};
 
-  var compileHtml = function(file, data, opt, cb) {
-    var html;
-    try {
-      html = htmlMinify(data, options.html);
-    } catch(err) {
-      return cb(err);
-    }
-    cb(null, html, [file]);
-  };
+		this.options.js = merge(this.options.js || {}, {
+			mangle: false,
+			compress: {
+				sequences: false
+			}
+		});
 
-  var compilers = {
-    '.css': compileCss,
-    '.js': compileJs,
-    '.html': compileHtml,
-    '.htm': compileHtml
-  };
+		this.options.html = merge(this.options.html || {}, {
+			removeComments: true,
+			removeCommentsFromCDATA: true,
+			removeCDATASectionsFromCDATA: true,
+			collapseWhitespace: true,
+			collapseBooleanAttributes: true,
+			removeAttributeQuotes: true,
+			removeRedundantAttributes: true,
+			useShortDoctype: true,
+			removeEmptyAttributes: true,
+			removeOptionalTags: true,
+			removeScriptTypeAttributes: true,
+			removeStyleLinkTypeAttributes: true,
+		});
 
-  options = merge(opt);
+	}
 
-  options.css = options.css || {};
+	canTransform(filename) {
+		return Promise.resolve(/\.min\.(css|js|htm|html)$/i.test(filename));
+	}
 
-  options.js = options.js || {
-    mangle: false,
-    compress: {
-      sequences: false
-    }
-  };
+	map(filename) {
+		return Promise.resolve(filename.replace(/\.min\.(css|js|htm|html)$/i, '.$1'));
+	}
 
-  options.html = options.html || {
-    removeComments: true,
-    removeCommentsFromCDATA: true,
-    removeCDATASectionsFromCDATA: true,
-    collapseWhitespace: true,
-    collapseBooleanAttributes: true,
-    removeAttributeQuotes: true,
-    removeRedundantAttributes: true,
-    useShortDoctype: true,
-    removeEmptyAttributes: true,
-    removeOptionalTags: true,
-    removeScriptTypeAttributes: true,
-    removeStyleLinkTypeAttributes: true,
-  };
+	_compileCss(filename, data) {
+		return new Promise((resolved, rejected) => {
+			var css = (new CleanCSS(this.options.css)).minify(data).styles;
+			resolved({
+				data: css,
+				files: [filename]
+			});
+		});
+	}
 
-  return {
-    map: {
-      '.min.css': '.css',
-      '.min.js': '.js',
-      '.min.html': '.html',
-      '.min.htm': '.htm'
-    },
-    encoding: (opt || {}).encoding || 'utf8',
-    compile: function(file, data, opt, cb) {
-      return compilers[path.extname(file)](file, data, opt, cb);
-    }
-  };
-};
+	_compileJs(filename, data) {
+		return new Promise((resolved, rejected) => {
+			var js = UglifyJS.minify(data, merge(this.options.js, { fromString: true })).code;
+			resolved({
+				data: js,
+				files: [filename]
+			});
+		});
+	}
+
+	_compileHtml(filename, data) {
+		return new Promise((resolved, rejected) => {
+			var html = htmlMinify(data, this.options.html);
+			resolved({
+				data: html,
+				files: [filename]
+			});
+		});
+	}
+
+	compile(filename, data) {
+		var compilers = {
+			'.css': this._compileCss,
+			'.js': this._compileJs,
+			'.html': this._compileHtml,
+			'.htm': this._compileHtml
+		};
+		return compilers[path.extname(filename).toLowerCase()].call(this, filename, data);
+	}
+
+}
+
+exports = module.exports = MinifyTranform;
