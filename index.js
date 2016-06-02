@@ -41,11 +41,11 @@ class MinifyTranform extends Transform {
 	}
 
 	canTransform(filename) {
-		return Promise.resolve(/\.min\.(css|js|htm|html)$/i.test(filename));
+		return /\.min\.(css|js|htm|html)$/i.test(filename);
 	}
 
 	map(filename) {
-		return Promise.resolve(filename.replace(/\.min\.(css|js|htm|html)$/i, '.$1'));
+		return filename.replace(/\.min\.(css|js|htm|html)$/i, '.$1');
 	}
 
 	_compileCss(filename, data) {
