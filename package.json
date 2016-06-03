@@ -9,7 +9,7 @@
     "url": "https://github.com/donotjs/donot-transform-minify"
   },
   "dependencies": {
-    "@donotjs/donot-transform": "^1.0.2",
+    "@donotjs/donot-transform": "^1.0.0",
     "clean-css": "^3.3.3",
     "html-minifier": "^0.7.2",
     "merge": "^1.2.0",
