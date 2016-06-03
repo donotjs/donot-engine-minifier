@@ -2,6 +2,9 @@
 
 'use strict';
 
+const os = require('os');
+const fs = require('fs');
+const path = require('path');
 const chai = require('chai');
 const expect = chai.expect;
 const chaiAsPromised = require('chai-as-promised');
@@ -12,6 +15,8 @@ chai.use(chaiAsPromised);
 const MinifyTransform = require('../');
 
 var transform = new MinifyTransform();
+
+var destFilename = path.normalize(os.tmpdir() + '/testdonotminify');
 
 describe('minify', () => {
 
@@ -36,26 +41,29 @@ describe('minify', () => {
 							 '</html>\n';
 
 		it ('should come back with minified css', () => {
-			return transform.compile('test.css', css).then((result) => {
+			return transform.compile(__dirname + '/data/test.css', destFilename).then((result) => {
+				result.data = fs.readFileSync(destFilename, 'utf8');
 				expect(result.data).to.equal('my{width:100%}');
 				expect(result.files).to.an.array;
-				expect(result.files[0]).to.equal('test.css');
+				expect(result.files[0]).to.equal(__dirname + '/data/test.css');
 			}).should.eventually.be.fulfilled;
 		});
 
 		it ('should come back with minified js', () => {
-			return transform.compile('test.js', js).then((result) => {
+			return transform.compile(__dirname + '/data/test.js', destFilename).then((result) => {
+				result.data = fs.readFileSync(destFilename, 'utf8');
 				expect(result.data).to.equal('function myFunc(){console.log("test")}');
 				expect(result.files).to.an.array;
-				expect(result.files[0]).to.equal('test.js');
+				expect(result.files[0]).to.equal(__dirname + '/data/test.js');
 			}).should.eventually.be.fulfilled;
 		});
 
 		it ('should come back with minified html', () => {
-			return transform.compile('test.html', html).then((result) => {
+			return transform.compile(__dirname + '/data/test.html', destFilename).then((result) => {
+				result.data = fs.readFileSync(destFilename, 'utf8');
 				expect(result.data).to.equal('<!DOCTYPE html><html><head><title>HTML</title><body><h1>My HTML document</h1>');
 				expect(result.files).to.an.array;
-				expect(result.files[0]).to.equal('test.html');
+				expect(result.files[0]).to.equal(__dirname + '/data/test.html');
 			}).should.eventually.be.fulfilled;
 		});
 

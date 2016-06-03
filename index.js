@@ -1,5 +1,6 @@
 'use strict';
 
+const fs = require('fs');
 const path = require('path');
 const merge = require('merge');
 const CleanCSS = require('clean-css');
@@ -49,43 +50,47 @@ class MinifyTranform extends Transform {
 	}
 
 	_compileCss(filename, data) {
-		return new Promise((resolved, rejected) => {
-			var css = (new CleanCSS(this.options.css)).minify(data).styles;
-			resolved({
-				data: css,
-				files: [filename]
-			});
-		});
+		var css = (new CleanCSS(this.options.css)).minify(data).styles;
+		return {
+			data: css,
+			files: [filename]
+		};
 	}
 
 	_compileJs(filename, data) {
-		return new Promise((resolved, rejected) => {
-			var js = UglifyJS.minify(data, merge(this.options.js, { fromString: true })).code;
-			resolved({
-				data: js,
-				files: [filename]
-			});
-		});
+		var js = UglifyJS.minify(data, merge(this.options.js, { fromString: true })).code;
+		return {
+			data: js,
+			files: [filename]
+		};
 	}
 
 	_compileHtml(filename, data) {
-		return new Promise((resolved, rejected) => {
-			var html = htmlMinify(data, this.options.html);
-			resolved({
-				data: html,
-				files: [filename]
-			});
-		});
+		var html = htmlMinify(data, this.options.html);
+		return {
+			data: html,
+			files: [filename]
+		};
 	}
 
-	compile(filename, data) {
-		var compilers = {
-			'.css': this._compileCss,
-			'.js': this._compileJs,
-			'.html': this._compileHtml,
-			'.htm': this._compileHtml
-		};
-		return compilers[path.extname(filename).toLowerCase()].call(this, filename, data);
+	compile(srcFilename, destFilename) {
+		return new Promise((resolved, rejected) => {
+			var compilers = {
+				'.css': this._compileCss,
+				'.js': this._compileJs,
+				'.html': this._compileHtml,
+				'.htm': this._compileHtml
+			};
+			fs.readFile(srcFilename, 'utf8', (err, data) => {
+				if (err) return rejected(err);
+				var result = compilers[path.extname(srcFilename).toLowerCase()].call(this, srcFilename, data);
+				fs.writeFile(destFilename, result.data, 'utf8', (err) => {
+					if (err) return rejected(err);
+					delete result.data;
+					resolved(result);
+				});
+			});
+		});
 	}
 
 }
