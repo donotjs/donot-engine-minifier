@@ -73,7 +73,7 @@ class MinifyTranform extends Transform {
 		};
 	}
 
-	compile(srcFilename, destFilename) {
+	compile(filename, data) {
 		return new Promise((resolved, rejected) => {
 			var compilers = {
 				'.css': this._compileCss,
@@ -81,15 +81,9 @@ class MinifyTranform extends Transform {
 				'.html': this._compileHtml,
 				'.htm': this._compileHtml
 			};
-			fs.readFile(srcFilename, 'utf8', (err, data) => {
-				if (err) return rejected(err);
-				var result = compilers[path.extname(srcFilename).toLowerCase()].call(this, srcFilename, data);
-				fs.writeFile(destFilename, result.data, 'utf8', (err) => {
-					if (err) return rejected(err);
-					delete result.data;
-					resolved(result);
-				});
-			});
+			var result = compilers[path.extname(filename).toLowerCase()].call(this, filename, data.toString());
+			result.data = new Buffer(result.data);
+			resolved(result);
 		});
 	}
 

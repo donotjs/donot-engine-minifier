@@ -1,6 +1,6 @@
 {
   "name": "@donotjs/donot-transform-minify",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Minifier support for donot.",
   "author": "Kristian Trenskow <trenskow@me.com>",
   "main": "index.js",
