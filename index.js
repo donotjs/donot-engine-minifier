@@ -15,13 +15,16 @@ class MinifyTranform extends Transform {
 
 		this.options = merge(true, options || {});
 
-		this.options.css = this.options.css || {};
+		this.options.css = merge(this.options.css || {},  {
+			sourceMap: true
+		});
 
 		this.options.js = merge(this.options.js || {}, {
 			mangle: false,
 			compress: {
 				sequences: false
-			}
+			},
+			fromString: true
 		});
 
 		this.options.html = merge(this.options.html || {}, {
@@ -50,17 +53,20 @@ class MinifyTranform extends Transform {
 	}
 
 	_compileCss(filename, data) {
-		var css = (new CleanCSS(this.options.css)).minify(data).styles;
+		var result = (new CleanCSS(this.options.css)).minify(data);
 		return {
-			data: css,
+			data: result.styles,
+			map: JSON.parse(result.sourceMap.toString()),
 			files: [filename]
 		};
 	}
 
 	_compileJs(filename, data) {
-		var js = UglifyJS.minify(data, merge(this.options.js, { fromString: true })).code;
+		var result = UglifyJS.minify(data, merge(this.options.js, { outSourceMap: path.basename(filename) }));
+		var map = JSON.parse(result.map);
 		return {
-			data: js,
+			data: result.code,
+			map: map,
 			files: [filename]
 		};
 	}
