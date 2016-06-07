@@ -65,7 +65,7 @@ class MinifyTranform extends Transform {
 		var result = UglifyJS.minify(data, merge(this.options.js, { outSourceMap: path.basename(filename) }));
 		var map = JSON.parse(result.map);
 		return {
-			data: result.code,
+			data: result.code.replace(/\n\/\/# sourceMappingURL=.*?$/, ''),
 			map: map,
 			files: [filename]
 		};
