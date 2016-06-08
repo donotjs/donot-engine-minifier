@@ -53,7 +53,7 @@ describe('minify', () => {
 
 		it ('should come back with minified js', () => {
 			return transform.compile(__dirname + '/data/test.js', js).then((result) => {
-				expect(result.data.toString()).to.equal('function myFunc(){console.log("test")}');
+				expect(result.data.toString()).to.equal('function myFunc(){console.log("test")}\n//# sourceMappingURL=test.js');
 				expect(result).to.have.property('map')
 				              .to.be.an('object')
 				              .to.have.property('mappings')

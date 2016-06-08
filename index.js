@@ -15,9 +15,7 @@ class MinifyTranform extends Transform {
 
 		this.options = merge(true, options || {});
 
-		this.options.css = merge(this.options.css || {},  {
-			sourceMap: true
-		});
+		this.options.css = this.options.css || {};
 
 		this.options.js = merge(this.options.js || {}, {
 			mangle: false,
@@ -52,8 +50,8 @@ class MinifyTranform extends Transform {
 		return filename.replace(/\.min\.(css|js|htm|html)$/i, '.$1');
 	}
 
-	_compileCss(filename, data) {
-		var result = (new CleanCSS(this.options.css)).minify(data);
+	_compileCss(filename, data, map) {
+		var result = (new CleanCSS(merge(this.options.css, { sourceMap: map ? JSON.stringify(map) : true }))).minify(data);
 		return {
 			data: result.styles,
 			map: JSON.parse(result.sourceMap.toString()),
@@ -61,12 +59,14 @@ class MinifyTranform extends Transform {
 		};
 	}
 
-	_compileJs(filename, data) {
-		var result = UglifyJS.minify(data, merge(this.options.js, { outSourceMap: path.basename(filename) }));
-		var map = JSON.parse(result.map);
+	_compileJs(filename, data, map) {
+		var result = UglifyJS.minify(data, merge(this.options.js, {
+			inSourceMap: map,
+			outSourceMap: path.basename(filename)
+		}));
 		return {
-			data: result.code.replace(/\n\/\/# sourceMappingURL=.*?$/, ''),
-			map: map,
+			data: result.code,
+			map: JSON.parse(result.map),
 			files: [filename]
 		};
 	}
@@ -79,7 +79,7 @@ class MinifyTranform extends Transform {
 		};
 	}
 
-	compile(filename, data) {
+	compile(filename, data, map) {
 		return new Promise((resolved, rejected) => {
 			var compilers = {
 				'.css': this._compileCss,
@@ -87,7 +87,7 @@ class MinifyTranform extends Transform {
 				'.html': this._compileHtml,
 				'.htm': this._compileHtml
 			};
-			var result = compilers[path.extname(filename).toLowerCase()].call(this, filename, data.toString());
+			var result = compilers[path.extname(filename).toLowerCase()].call(this, filename, data.toString(), map);
 			result.data = new Buffer(result.data);
 			resolved(result);
 		});
